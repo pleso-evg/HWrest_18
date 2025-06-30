@@ -16,7 +16,6 @@ import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 
 public class TestBase {
-
     @BeforeAll
     static void setup() {
         Configuration.baseUrl = "https://demoqa.com";
@@ -27,16 +26,22 @@ public class TestBase {
         Configuration.browserSize = System.getProperty("screen_resolution", "1920x1080");
         Configuration.pageLoadStrategy = "eager";
         Configuration.timeout = 5000;
-        Configuration.remote = System.getProperty("remoteUrl",
-                "https://user1:1234@selenoid.autotests.cloud/wd/hub");
 
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("selenoid:options", Map.of(
-                "enableVNC", true,
-                "enableVideo", true
-        ));
-        Configuration.browserCapabilities = capabilities;
+        // режим запуска
+        String remoteUrl = System.getProperty("remoteUrl", "");
+        boolean isRemote = remoteUrl != null && !remoteUrl.isBlank();
+
+        if (isRemote) {
+            Configuration.remote = remoteUrl;
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setCapability("selenoid:options", Map.of(
+                    "enableVNC", true,
+                    "enableVideo", true
+            ));
+            Configuration.browserCapabilities = capabilities;
+        }
     }
+
     @BeforeEach
     void addAllureListener() {
         SelenideLogger.addListener("allure", new AllureSelenide());

@@ -8,14 +8,12 @@ import static io.restassured.RestAssured.given;
 public class BookStoreApiSteps {
 
     public static void addBook(String token, String userId, String isbn) {
-        String requestBody = String.format(
-                "{\"userId\":\"%s\",\"collectionOfIsbns\":[{\"isbn\":\"%s\"}]}",
-                userId, isbn);
+        AddBookRequest request = new AddBookRequest(userId, isbn);
 
         given()
                 .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
-                .body(requestBody)
+                .body(request)
                 .when()
                 .post("/BookStore/v1/Books")
                 .then()
@@ -23,13 +21,11 @@ public class BookStoreApiSteps {
     }
 
     public static void deleteBook(String token, String userId, String isbn) {
-        String requestBody = String.format(
-                "{\"isbn\":\"%s\",\"userId\":\"%s\"}",
-                isbn, userId);
+        DeleteBookRequest request = new DeleteBookRequest(userId, isbn);
 
         given()
                 .header("Authorization", "Bearer " + token)
-                .body(requestBody)
+                .body(request)
                 .contentType(ContentType.JSON)
                 .log().all()
                 .when()
